@@ -51,6 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     });
   };
 
+  console.log('Product image URL:', product.image_url);
+
   return (
     <Link to={`/product/${product.id}`}>
       <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full">
@@ -60,6 +62,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               src={product.image_url || '/placeholder.svg'} 
               alt={product.name}
               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                console.error('Image failed to load:', product.image_url);
+                e.currentTarget.src = '/placeholder.svg';
+              }}
             />
             {product.original_price && (
               <Badge variant="destructive" className="absolute top-2 left-2">
