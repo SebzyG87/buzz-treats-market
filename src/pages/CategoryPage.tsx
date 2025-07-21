@@ -21,8 +21,8 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Extract category from the current path
-  const category = location.pathname.slice(1); // Remove leading slash
+  // Extract category from the current path (remove '/category/' prefix)
+  const category = location.pathname.replace('/category/', '');
 
   const categoryTitles: { [key: string]: string } = {
     'gummies': 'Gummies',
@@ -39,7 +39,7 @@ const CategoryPage = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('category', category.replace('-', ' '));
+        .eq('category', category);
 
       if (error) {
         toast({
