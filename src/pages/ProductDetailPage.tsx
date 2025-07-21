@@ -14,6 +14,7 @@ interface Product {
   name: string;
   description: string;
   price_value: number;
+  original_price?: number;
   image_url: string;
   category: string;
   stock_quantity: number;
@@ -169,13 +170,27 @@ const ProductDetailPage = () => {
         {/* Product Details */}
         <div className="space-y-6">
           <div>
-            <Badge variant="outline" className="mb-3">
-              {product.category}
-            </Badge>
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant="outline">
+                {product.category}
+              </Badge>
+              {product.original_price && (
+                <Badge variant="destructive">
+                  Sale
+                </Badge>
+              )}
+            </div>
             <h1 className="text-3xl font-bold text-foreground mb-4">{product.name}</h1>
-            <p className="text-xl font-semibold text-primary mb-4">
-              £{(selectedVariation ? selectedVariation.price_value : product.price_value).toFixed(2)}
-            </p>
+            <div className="mb-4">
+              <p className="text-xl font-semibold text-primary">
+                £{(selectedVariation ? selectedVariation.price_value : product.price_value).toFixed(2)}
+              </p>
+              {product.original_price && (
+                <p className="text-lg text-muted-foreground line-through">
+                  £{product.original_price.toFixed(2)}
+                </p>
+              )}
+            </div>
             <p className="text-muted-foreground leading-relaxed">
               {product.description}
             </p>
