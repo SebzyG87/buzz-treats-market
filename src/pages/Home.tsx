@@ -8,19 +8,32 @@ const categories = [
   {
     id: 'gummies',
     title: 'Gummies',
-    images: ['https://images.unsplash.com/photo-1582062135279-2d2b4ac10b94?w=400&h=300&fit=crop'],
+    images: [
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/1000mg-5-sweets.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/1000mg-2-sweets.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/250mg-3-sweets.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/250mg-5-sweets.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/500mg-3-sweets.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/500mg-5-sweets.jpg'
+    ],
     description: 'Chewy, fruity delights in every bite'
   },
   {
     id: 'chocolate-bars',
     title: 'Chocolate Bars', 
-    images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=300&fit=crop'],
+    images: [
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/chocolate-bars/500mg-chocolate-bar.jpg',
+      'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=300&fit=crop'
+    ],
     description: 'Rich, creamy chocolate experiences'
   },
   {
     id: 'cookies',
     title: 'Cookies',
-    images: ['https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop'],
+    images: [
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/cookies/standard-cookie.jpg',
+      'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop'
+    ],
     description: 'Freshly baked goodness awaits'
   },
   {
