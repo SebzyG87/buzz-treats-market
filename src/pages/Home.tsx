@@ -9,12 +9,12 @@ const categories = [
     id: 'gummies',
     title: 'Gummies',
     images: [
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/1000mg-5-sweets.jpg',
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/1000mg-2-sweets.jpg',
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/250mg-3-sweets.jpg',
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/250mg-5-sweets.jpg',
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/500mg-3-sweets.jpg',
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/500mg-5-sweets.jpg'
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/1gummies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/2gummies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/3gummies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/4gummies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/5gummies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/gummies/6gummies.jpeg'
     ],
     description: 'Chewy, fruity delights in every bite'
   },
@@ -22,8 +22,9 @@ const categories = [
     id: 'chocolate-bars',
     title: 'Chocolate Bars', 
     images: [
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/chocolate-bars/500mg-chocolate-bar.jpg',
-      'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=300&fit=crop'
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/chocolate-bars/3chocolate-bars.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/chocolate-bars/4chocolate-bars.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/chocolate-bars/5chocolate-bars.jpg'
     ],
     description: 'Rich, creamy chocolate experiences'
   },
@@ -31,8 +32,9 @@ const categories = [
     id: 'cookies',
     title: 'Cookies',
     images: [
-      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/cookies/standard-cookie.jpg',
-      'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop'
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/cookies/1cookies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/cookies/2cookies.jpeg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/cookies/3cookies.jpeg'
     ],
     description: 'Freshly baked goodness awaits'
   },
