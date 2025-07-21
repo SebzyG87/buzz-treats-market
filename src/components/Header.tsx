@@ -4,10 +4,12 @@ import { ShoppingCart, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { useAdmin } from '@/hooks/useAdmin';
 
 const Header = () => {
   const { user, signOut } = useAuth();
   const { totalItems } = useCart();
+  const { isAdmin } = useAdmin();
 
   return (
     <header className="bg-primary text-primary-foreground sticky top-0 z-50 shadow-lg">
@@ -38,6 +40,12 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
+                {isAdmin && (
+                  <Link to="/admin" className="hidden md:flex items-center hover:text-accent transition-colors">
+                    <Heart className="w-5 h-5 mr-1" />
+                    Admin
+                  </Link>
+                )}
                 <Link to="/account" className="hidden md:flex items-center hover:text-accent transition-colors">
                   <User className="w-5 h-5 mr-1" />
                   My Account

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
+import AdminRoute from "@/components/AdminRoute";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -18,6 +19,10 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import AddressManagementPage from "./pages/AddressManagementPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminCustomers from "./pages/admin/AdminCustomers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +52,10 @@ const App = () => (
                 <Route path="/order-history" element={<OrderHistoryPage />} />
                 <Route path="/order/:orderId" element={<OrderDetailPage />} />
                 <Route path="/manage-addresses" element={<AddressManagementPage />} />
+                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+                <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+                <Route path="/admin/customers" element={<AdminRoute><AdminCustomers /></AdminRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

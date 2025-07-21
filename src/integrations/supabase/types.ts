@@ -228,18 +228,21 @@ export type Database = {
           full_name: string | null
           id: string
           loyalty_points: number | null
+          role: string | null
           updated_at: string | null
         }
         Insert: {
           full_name?: string | null
           id: string
           loyalty_points?: number | null
+          role?: string | null
           updated_at?: string | null
         }
         Update: {
           full_name?: string | null
           id?: string
           loyalty_points?: number | null
+          role?: string | null
           updated_at?: string | null
         }
         Relationships: []
