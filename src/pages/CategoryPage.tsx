@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import ProductCard from '@/components/ProductCard';
 import { useToast } from '@/hooks/use-toast';
@@ -9,16 +9,20 @@ interface Product {
   name: string;
   description: string;
   price_value: number;
+  original_price?: number;
   image_url: string;
   category: string;
   stock_quantity: number;
 }
 
 const CategoryPage = () => {
-  const { category } = useParams<{ category: string }>();
+  const location = useLocation();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  // Extract category from the current path
+  const category = location.pathname.slice(1); // Remove leading slash
 
   const categoryTitles: { [key: string]: string } = {
     'gummies': 'Gummies',
