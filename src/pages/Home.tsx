@@ -2,30 +2,36 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import ImageCarousel from '@/components/ImageCarousel';
 
 const categories = [
   {
     id: 'gummies',
     title: 'Gummies',
-    image: 'https://images.unsplash.com/photo-1582062135279-2d2b4ac10b94?w=400&h=300&fit=crop',
+    images: ['https://images.unsplash.com/photo-1582062135279-2d2b4ac10b94?w=400&h=300&fit=crop'],
     description: 'Chewy, fruity delights in every bite'
   },
   {
     id: 'chocolate-bars',
-    title: 'Chocolate Bars',
-    image: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=300&fit=crop',
+    title: 'Chocolate Bars', 
+    images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=300&fit=crop'],
     description: 'Rich, creamy chocolate experiences'
   },
   {
     id: 'cookies',
     title: 'Cookies',
-    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop',
+    images: ['https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop'],
     description: 'Freshly baked goodness awaits'
   },
   {
     id: 'e-liquids',
     title: 'E-liquids',
-    image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop',
+    images: [
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/product-images/1e-liquids.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/product-images/2e-liquids.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/product-images/3e-liquids.jpg',
+      'https://cyiyydakxqpygstaxqfw.supabase.co/storage/v1/object/public/product-images/4e-liquids.jpg'
+    ],
     description: 'Premium vaping flavors and blends'
   }
 ];
@@ -59,10 +65,10 @@ const Home = () => {
                 <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer">
                   <CardContent className="p-0">
                     <div className="relative">
-                      <img 
-                        src={category.image} 
-                        alt={category.title}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      <ImageCarousel 
+                        images={category.images}
+                        className="w-full h-64"
+                        autoPlayInterval={4000}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
