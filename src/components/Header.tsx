@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User, Heart } from 'lucide-react';
@@ -22,10 +23,10 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex space-x-6">
-            <Link to="/home" className="hover:text-accent transition-colors">
+            <Link to="/" className="hover:text-accent transition-colors">
               Home
             </Link>
-            <Link to="/home" className="hover:text-accent transition-colors">
+            <Link to="/" className="hover:text-accent transition-colors">
               All Sweets
             </Link>
             <Link to="/sweet-tubs" className="hover:text-accent transition-colors">
