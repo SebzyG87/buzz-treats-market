@@ -26,14 +26,17 @@ const Header = () => {
             <Link to="/" className="hover:text-accent transition-colors">
               Home
             </Link>
-            <Link to="/" className="hover:text-accent transition-colors">
-              All Sweets
+            <Link to="/category/gummies" className="hover:text-accent transition-colors">
+              Gummies
             </Link>
-            <Link to="/sweet-tubs" className="hover:text-accent transition-colors">
-              Sweet Tubs
+            <Link to="/category/chocolate-bars" className="hover:text-accent transition-colors">
+              Chocolate Bars
             </Link>
-            <Link to="/new-sweets" className="hover:text-accent transition-colors">
-              New Sweets
+            <Link to="/category/cookies" className="hover:text-accent transition-colors">
+              Cookies
+            </Link>
+            <Link to="/category/e-liquids" className="hover:text-accent transition-colors">
+              E-Liquids
             </Link>
           </nav>
 
