@@ -17,7 +17,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('signin');
   
-  const { signIn, signUp, resetPassword, user } = useAuth();
+  const { signIn, signUp, signInWithProvider, resetPassword, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +51,16 @@ const AuthPage = () => {
     setLoading(true);
     await resetPassword(resetEmail);
     setLoading(false);
+  };
+
+  const handleSocialSignIn = async (provider: 'google' | 'apple') => {
+    setLoading(true);
+    await signInWithProvider(provider);
+    setLoading(false);
+  };
+
+  const handleGuestCheckout = () => {
+    navigate('/checkout');
   };
 
   return (
@@ -101,6 +111,40 @@ const AuthPage = () => {
                   {loading ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
+              
+              <div className="space-y-3 mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleSocialSignIn('google')}
+                    disabled={loading}
+                  >
+                    Google
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleSocialSignIn('apple')}
+                    disabled={loading}
+                  >
+                    Apple
+                  </Button>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  className="w-full"
+                  onClick={handleGuestCheckout}
+                >
+                  Continue as Guest
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

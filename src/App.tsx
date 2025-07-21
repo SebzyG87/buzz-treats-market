@@ -14,6 +14,10 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import AccountPage from "./pages/AccountPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
+import AddressManagementPage from "./pages/AddressManagementPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +43,10 @@ const App = () => (
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/payment-success" element={<PaymentSuccessPage />} />
                 <Route path="/account" element={<AccountPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/order-history" element={<OrderHistoryPage />} />
+                <Route path="/order/:orderId" element={<OrderDetailPage />} />
+                <Route path="/manage-addresses" element={<AddressManagementPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
