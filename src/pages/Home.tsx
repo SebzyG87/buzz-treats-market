@@ -61,14 +61,19 @@ const Home = () => {
           <p className="text-xl mb-8 opacity-90">
             Discover our premium collection of sweet treats and e-liquids
           </p>
-          <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+            onClick={() => document.getElementById('shop-by-category')?.scrollIntoView({ behavior: 'smooth' })}
+          >
             Explore Our Products
           </Button>
         </div>
       </section>
 
       {/* Categories Grid */}
-      <section className="py-16">
+      <section id="shop-by-category" className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-foreground">
             Shop by Category
