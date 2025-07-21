@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,11 +9,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+declare global {
+  interface Window {
+    Square: any;
+  }
+}
+
 const CheckoutPage = () => {
   const { user } = useAuth();
-  const { items } = useCart();
+  const { items, clearCart } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [payments, setPayments] = useState<any>(null);
+  const [card, setCard] = useState<any>(null);
   
   const [shippingInfo, setShippingInfo] = useState({
     fullName: '',
@@ -30,22 +39,70 @@ const CheckoutPage = () => {
   const discountAmount = Math.round(subtotal * appliedDiscount);
   const total = subtotal - discountAmount;
 
+  useEffect(() => {
+    const initializeSquare = async () => {
+      if (!window.Square) {
+        const script = document.createElement('script');
+        script.src = 'https://web.squarecdn.com/v1/square.js';
+        script.async = true;
+        script.onload = () => {
+          if (window.Square) {
+            initSquarePayments();
+          }
+        };
+        document.head.appendChild(script);
+      } else {
+        initSquarePayments();
+      }
+    };
+
+    const initSquarePayments = async () => {
+      try {
+        const paymentsInstance = window.Square.payments('sandbox-sq0idb-APPLICATION_ID', 'LOCATION_ID');
+        setPayments(paymentsInstance);
+        
+        const cardInstance = await paymentsInstance.card();
+        await cardInstance.attach('#card-container');
+        setCard(cardInstance);
+      } catch (error) {
+        console.error('Failed to initialize Square payments:', error);
+      }
+    };
+
+    initializeSquare();
+  }, []);
+
   if (items.length === 0) {
     return <Navigate to="/cart" replace />;
   }
 
-  const handleApplyPromoCode = () => {
-    // Check if the promo code is valid (starts with "LEAF" and is 12 characters total)
-    if (promoCode.startsWith('LEAF') && promoCode.length === 12) {
-      setAppliedDiscount(0.15); // 15% discount
+  const handleApplyPromoCode = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('coupon_codes')
+        .select('*')
+        .eq('code', promoCode)
+        .eq('used', false)
+        .single();
+
+      if (error || !data) {
+        toast({
+          title: "Invalid Promo Code",
+          description: "Please check your promo code and try again",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setAppliedDiscount(data.discount_percentage);
       toast({
         title: "Promo Code Applied!",
-        description: "You've received a 15% discount"
+        description: `You've received a ${Math.round(data.discount_percentage * 100)}% discount`
       });
-    } else {
+    } catch (error) {
       toast({
-        title: "Invalid Promo Code",
-        description: "Please check your promo code and try again",
+        title: "Error",
+        description: "Failed to apply promo code",
         variant: "destructive"
       });
     }
@@ -60,28 +117,52 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!card) {
+      toast({
+        title: "Payment Error",
+        description: "Payment form not ready. Please refresh and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: {
-          amount: Math.round(total * 100), // Convert to pence
-          items: items.map(item => ({
-            name: item.product.name,
-            price: item.product.price_value,
-            quantity: item.quantity
-          })),
-          shippingAddress: shippingInfo,
-          user_id: user?.id || null,
-          guest_email: user ? null : shippingInfo.email,
-          discount_percentage: appliedDiscount
+      const result = await card.tokenize();
+      if (result.status === 'OK') {
+        const { data, error } = await supabase.functions.invoke('process-square-payment', {
+          body: {
+            sourceId: result.token,
+            amount: Math.round(total * 100), // Convert to pence
+            items: items.map(item => ({
+              name: item.product.name,
+              price: item.product.price_value,
+              quantity: item.quantity
+            })),
+            shippingAddress: shippingInfo,
+            user_id: user?.id || null,
+            guest_email: user ? null : shippingInfo.email,
+            discount_percentage: appliedDiscount,
+            promo_code: promoCode || null
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.success) {
+          clearCart();
+          toast({
+            title: "Payment Successful!",
+            description: "Your order has been placed successfully."
+          });
+          navigate('/payment-success');
+        } else {
+          throw new Error(data.error || 'Payment failed');
         }
-      });
-
-      if (error) throw error;
-
-      // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
+      } else {
+        throw new Error('Card tokenization failed');
+      }
     } catch (error) {
       console.error('Payment error:', error);
       toast({
@@ -184,6 +265,16 @@ const CheckoutPage = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Payment Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div id="card-container" className="min-h-[100px] p-4 border rounded-md"></div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Order Summary */}
@@ -226,7 +317,7 @@ const CheckoutPage = () => {
                 </div>
                 {appliedDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount (15%)</span>
+                    <span>Discount ({Math.round(appliedDiscount * 100)}%)</span>
                     <span>-£{discountAmount.toFixed(2)}</span>
                   </div>
                 )}

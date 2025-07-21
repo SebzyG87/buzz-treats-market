@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -14,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, items, shippingAddress, user_id, guest_email, discount_percentage = 0 } = await req.json();
+    const { sourceId, amount, items, shippingAddress, user_id, guest_email, discount_percentage = 0, promo_code } = await req.json();
 
     // Get user if authenticated
     let user = null;
@@ -34,50 +33,50 @@ serve(async (req) => {
       }
     }
 
-    // Initialize Stripe and Supabase service client
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
 
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user_email || guest_email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
+    // Process Square payment
+    const squareResponse = await fetch('https://connect.squareupsandbox.com/v2/payments', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get("SQUARE_ACCESS_TOKEN")}`,
+        'Content-Type': 'application/json',
+        'Square-Version': '2023-10-18'
+      },
+      body: JSON.stringify({
+        source_id: sourceId,
+        amount_money: {
+          amount: amount,
+          currency: 'GBP'
+        },
+        location_id: Deno.env.get("SQUARE_LOCATION_ID"),
+        idempotency_key: crypto.randomUUID()
+      })
+    });
+
+    const squareResult = await squareResponse.json();
+
+    if (!squareResponse.ok || squareResult.errors) {
+      console.error("Square payment error:", squareResult);
+      throw new Error(squareResult.errors?.[0]?.detail || "Payment failed");
     }
 
-    // Create line items with discount applied
-    const lineItems = items.map((item: any) => {
-      const unitPrice = Math.round(item.price * 100); // Convert to pence
-      const discountedPrice = discount_percentage > 0 
-        ? Math.round(unitPrice * (1 - discount_percentage))
-        : unitPrice;
-      
-      return {
-        price_data: {
-          currency: "gbp",
-          product_data: { name: item.name },
-          unit_amount: discountedPrice,
-        },
-        quantity: item.quantity,
-      };
-    });
-
-    // Create a one-time payment session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : (guest_email || user_email),
-      line_items: lineItems,
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment-success`,
-      cancel_url: `${req.headers.get("origin")}/checkout`,
-    });
+    // Mark coupon as used if applied
+    if (promo_code && user_id) {
+      await supabaseService
+        .from('coupon_codes')
+        .update({ 
+          used: true, 
+          used_at: new Date().toISOString(),
+          user_id: user_id 
+        })
+        .eq('code', promo_code)
+        .eq('used', false);
+    }
 
     // Create order record
     const { data: orderData, error: orderError } = await supabaseService
@@ -86,7 +85,7 @@ serve(async (req) => {
         user_id: user_id,
         guest_email: guest_email,
         total_amount: amount,
-        status: "Pending",
+        status: "Paid",
         shipping_address: shippingAddress,
         points_earned: Math.floor(amount / 100), // 1 point per pound
       })
@@ -98,10 +97,10 @@ serve(async (req) => {
       throw new Error("Failed to create order");
     }
 
-    // Create order items and update stock
+    // Create order items
     const orderItems = items.map((item: any) => ({
       order_id: orderData.id,
-      product_id: item.name, // Using name as product_id for now
+      product_id: item.name,
       quantity: item.quantity,
       price: Math.round(item.price * 100),
     }));
@@ -141,15 +140,22 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ 
+      success: true, 
+      payment_id: squareResult.payment?.id,
+      order_id: orderData.id 
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("Error in create-payment:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("Error in process-square-payment:", error);
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: error.message 
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: 200,
     });
   }
 });
