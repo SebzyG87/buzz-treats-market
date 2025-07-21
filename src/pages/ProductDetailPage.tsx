@@ -69,7 +69,7 @@ const ProductDetailPage = () => {
       addItem({
         id: product.id,
         name: product.name,
-        price: product.price_value,
+        price_value: product.price_value,
         image_url: product.image_url
       });
     }

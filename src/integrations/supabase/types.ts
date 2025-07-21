@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      coupon_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          discount_percentage: number
+          id: string
+          used: boolean | null
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          discount_percentage: number
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          discount_percentage?: number
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -181,6 +211,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_stock: {
+        Args: { product_name: string; quantity: number }
+        Returns: number
+      }
       increment_loyalty_points: {
         Args: { user_id_param: string; points_to_add: number }
         Returns: undefined

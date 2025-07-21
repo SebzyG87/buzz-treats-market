@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
 const CartPage = () => {
-  const { state, removeItem, updateQuantity } = useCart();
+  const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
   const incrementQuantity = (id: string, currentQuantity: number) => {
     updateQuantity(id, currentQuantity + 1);
@@ -18,7 +18,7 @@ const CartPage = () => {
     }
   };
 
-  if (state.items.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
@@ -39,26 +39,26 @@ const CartPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {state.items.map((item) => (
-            <Card key={item.id}>
+          {items.map((item) => (
+            <Card key={item.product.id}>
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
                   <img 
-                    src={item.image_url || '/placeholder.svg'} 
-                    alt={item.name}
+                    src={item.product.image_url || '/placeholder.svg'} 
+                    alt={item.product.name}
                     className="w-20 h-20 object-cover rounded-md"
                   />
                   
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{item.name}</h3>
-                    <p className="text-primary font-medium">£{item.price.toFixed(2)}</p>
+                    <h3 className="text-lg font-semibold">{item.product.name}</h3>
+                    <p className="text-primary font-medium">£{item.product.price_value.toFixed(2)}</p>
                   </div>
                   
                   <div className="flex items-center space-x-2">
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => decrementQuantity(item.id, item.quantity)}
+                      onClick={() => decrementQuantity(item.product.id, item.quantity)}
                       disabled={item.quantity <= 1}
                     >
                       <Minus className="w-4 h-4" />
@@ -69,7 +69,7 @@ const CartPage = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => incrementQuantity(item.id, item.quantity)}
+                      onClick={() => incrementQuantity(item.product.id, item.quantity)}
                     >
                       <Plus className="w-4 h-4" />
                     </Button>
@@ -77,12 +77,12 @@ const CartPage = () => {
                   
                   <div className="text-right">
                     <p className="font-semibold">
-                      £{(item.price * item.quantity).toFixed(2)}
+                      £{(item.product.price_value * item.quantity).toFixed(2)}
                     </p>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.product.id)}
                       className="text-destructive hover:text-destructive mt-2"
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
@@ -104,24 +104,24 @@ const CartPage = () => {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>£{state.total.toFixed(2)}</span>
+                <span>£{totalPrice.toFixed(2)}</span>
               </div>
               
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>{state.total >= 50 ? 'Free' : '£4.99'}</span>
+                <span>{totalPrice >= 50 ? 'Free' : '£4.99'}</span>
               </div>
               
               <div className="border-t pt-4">
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>£{(state.total + (state.total >= 50 ? 0 : 4.99)).toFixed(2)}</span>
+                  <span>£{(totalPrice + (totalPrice >= 50 ? 0 : 4.99)).toFixed(2)}</span>
                 </div>
               </div>
               
-              {state.total < 50 && (
+              {totalPrice < 50 && (
                 <p className="text-sm text-muted-foreground">
-                  Add £{(50 - state.total).toFixed(2)} more for free shipping!
+                  Add £{(50 - totalPrice).toFixed(2)} more for free shipping!
                 </p>
               )}
               

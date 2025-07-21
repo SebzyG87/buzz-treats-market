@@ -7,7 +7,7 @@ import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const { user, signOut } = useAuth();
-  const { itemCount } = useCart();
+  const { totalItems } = useCart();
 
   return (
     <header className="bg-primary text-primary-foreground sticky top-0 z-50 shadow-lg">
@@ -65,9 +65,9 @@ const Header = () => {
             
             <Link to="/cart" className="relative">
               <ShoppingCart className="w-6 h-6" />
-              {itemCount > 0 && (
+              {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                  {itemCount}
+                  {totalItems}
                 </span>
               )}
             </Link>
