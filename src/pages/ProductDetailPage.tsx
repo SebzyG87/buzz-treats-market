@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Plus, Minus } from 'lucide-react';
@@ -19,9 +20,19 @@ interface Product {
   sku: string;
 }
 
+interface ProductVariation {
+  id: string;
+  weight: string;
+  price_value: number;
+  stock_quantity: number;
+  sku: string;
+}
+
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [variations, setVariations] = useState<ProductVariation[]>([]);
+  const [selectedVariation, setSelectedVariation] = useState<ProductVariation | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
@@ -32,20 +43,33 @@ const ProductDetailPage = () => {
       if (!id) return;
       
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch product details
+      const { data: productData, error: productError } = await supabase
         .from('products')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) {
+      // Fetch product variations
+      const { data: variationsData, error: variationsError } = await supabase
+        .from('product_variations')
+        .select('*')
+        .eq('product_id', id)
+        .order('price_value', { ascending: true });
+
+      if (productError) {
         toast({
           title: "Error",
           description: "Failed to load product",
           variant: "destructive"
         });
       } else {
-        setProduct(data);
+        setProduct(productData);
+        if (variationsData && variationsData.length > 0) {
+          setVariations(variationsData);
+          setSelectedVariation(variationsData[0]); // Select first variation by default
+        }
       }
       setLoading(false);
     };
@@ -56,7 +80,11 @@ const ProductDetailPage = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
-    if (product.stock_quantity <= 0) {
+    const currentVariation = selectedVariation || product;
+    const currentStock = selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity;
+    const currentPrice = selectedVariation ? selectedVariation.price_value : product.price_value;
+    
+    if (currentStock <= 0) {
       toast({
         title: "Out of Stock",
         description: "This item is currently out of stock",
@@ -67,21 +95,22 @@ const ProductDetailPage = () => {
 
     for (let i = 0; i < quantity; i++) {
       addItem({
-        id: product.id,
-        name: product.name,
-        price_value: product.price_value,
+        id: selectedVariation ? `${product.id}-${selectedVariation.id}` : product.id,
+        name: selectedVariation ? `${product.name} (${selectedVariation.weight})` : product.name,
+        price_value: currentPrice,
         image_url: product.image_url
       });
     }
 
     toast({
       title: "Added to Cart",
-      description: `${quantity}x ${product.name} added to your cart`
+      description: `${quantity}x ${product.name}${selectedVariation ? ` (${selectedVariation.weight})` : ''} added to your cart`
     });
   };
 
   const incrementQuantity = () => {
-    if (product && quantity < product.stock_quantity) {
+    const currentStock = selectedVariation ? selectedVariation.stock_quantity : (product?.stock_quantity || 0);
+    if (quantity < currentStock) {
       setQuantity(quantity + 1);
     }
   };
@@ -145,22 +174,48 @@ const ProductDetailPage = () => {
             </Badge>
             <h1 className="text-3xl font-bold text-foreground mb-4">{product.name}</h1>
             <p className="text-xl font-semibold text-primary mb-4">
-              £{product.price_value.toFixed(2)}
+              £{(selectedVariation ? selectedVariation.price_value : product.price_value).toFixed(2)}
             </p>
             <p className="text-muted-foreground leading-relaxed">
               {product.description}
             </p>
           </div>
 
+          {/* Variations Selector */}
+          {variations.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Weight:</label>
+              <Select
+                value={selectedVariation?.id || ''}
+                onValueChange={(value) => {
+                  const variation = variations.find(v => v.id === value);
+                  setSelectedVariation(variation || null);
+                  setQuantity(1); // Reset quantity when changing variation
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select weight" />
+                </SelectTrigger>
+                <SelectContent>
+                  {variations.map((variation) => (
+                    <SelectItem key={variation.id} value={variation.id}>
+                      {variation.weight} - £{variation.price_value.toFixed(2)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Stock Status */}
           <div className="flex items-center space-x-2">
-            {product.stock_quantity > 0 ? (
+            {(selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity) > 0 ? (
               <>
                 <Badge variant="outline" className="text-green-600 border-green-600">
                   In Stock
                 </Badge>
                 <span className="text-sm text-muted-foreground">
-                  {product.stock_quantity} available
+                  {selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity} available
                 </span>
               </>
             ) : (
@@ -171,14 +226,14 @@ const ProductDetailPage = () => {
           </div>
 
           {/* SKU */}
-          {product.sku && (
+          {(selectedVariation?.sku || product.sku) && (
             <p className="text-sm text-muted-foreground">
-              SKU: {product.sku}
+              SKU: {selectedVariation?.sku || product.sku}
             </p>
           )}
 
           {/* Quantity Selector */}
-          {product.stock_quantity > 0 && (
+          {(selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity) > 0 && (
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <span className="font-medium">Quantity:</span>
@@ -199,7 +254,7 @@ const ProductDetailPage = () => {
                     variant="ghost" 
                     size="sm" 
                     onClick={incrementQuantity}
-                    disabled={quantity >= product.stock_quantity}
+                    disabled={quantity >= (selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity)}
                     className="px-3"
                   >
                     <Plus className="w-4 h-4" />
@@ -212,7 +267,7 @@ const ProductDetailPage = () => {
                 className="w-full"
                 size="lg"
               >
-                Add to Cart - £{(product.price_value * quantity).toFixed(2)}
+                Add to Cart - £{((selectedVariation ? selectedVariation.price_value : product.price_value) * quantity).toFixed(2)}
               </Button>
             </div>
           )}
