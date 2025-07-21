@@ -116,6 +116,44 @@ export type Database = {
         }
         Relationships: []
       }
+      product_variations: {
+        Row: {
+          created_at: string | null
+          id: string
+          price_value: number
+          product_id: string
+          sku: string | null
+          stock_quantity: number
+          weight: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          price_value: number
+          product_id: string
+          sku?: string | null
+          stock_quantity?: number
+          weight: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          price_value?: number
+          product_id?: string
+          sku?: string | null
+          stock_quantity?: number
+          weight?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
