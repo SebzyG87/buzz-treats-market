@@ -53,29 +53,29 @@ const Home = () => {
             Shop by Category
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {categories.map((category) => (
-              <Card key={category.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="relative">
-                    <img 
-                      src={category.image} 
-                      alt={category.title}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
-                      <p className="text-sm opacity-90 mb-4">{category.description}</p>
-                      <Link to={`/${category.id}`}>
+              <Link key={category.id} to={`/${category.id}`}>
+                <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer">
+                  <CardContent className="p-0">
+                    <div className="relative">
+                      <img 
+                        src={category.image} 
+                        alt={category.title}
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
+                        <p className="text-sm opacity-90 mb-4">{category.description}</p>
                         <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                           Shop Now
                         </Button>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>

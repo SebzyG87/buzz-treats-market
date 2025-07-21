@@ -22,17 +22,17 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex space-x-6">
-            <Link to="/gummies" className="hover:text-accent transition-colors">
-              Gummies
+            <Link to="/home" className="hover:text-accent transition-colors">
+              Home
             </Link>
-            <Link to="/chocolate-bars" className="hover:text-accent transition-colors">
-              Chocolate Bars
+            <Link to="/home" className="hover:text-accent transition-colors">
+              All Sweets
             </Link>
-            <Link to="/cookies" className="hover:text-accent transition-colors">
-              Cookies
+            <Link to="/sweet-tubs" className="hover:text-accent transition-colors">
+              Sweet Tubs
             </Link>
-            <Link to="/e-liquids" className="hover:text-accent transition-colors">
-              E-liquids
+            <Link to="/new-sweets" className="hover:text-accent transition-colors">
+              New Sweets
             </Link>
           </nav>
 

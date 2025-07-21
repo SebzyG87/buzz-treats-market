@@ -139,7 +139,9 @@ const AccountPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+      <h1 className="text-3xl font-bold mb-8">
+        Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}!
+      </h1>
       
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Profile Information */}
