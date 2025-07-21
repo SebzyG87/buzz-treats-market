@@ -21,8 +21,8 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Extract category from the current path (remove '/category/' prefix)
-  const category = location.pathname.replace('/category/', '');
+  // Extract category from the current path
+  const category = location.pathname.slice(1); // Remove leading slash
 
   const categoryTitles: { [key: string]: string } = {
     'gummies': 'Gummies',

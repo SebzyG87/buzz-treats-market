@@ -38,10 +38,10 @@ const App = () => (
             <Layout>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/category/gummies" element={<CategoryPage />} />
-                <Route path="/category/chocolate-bars" element={<CategoryPage />} />
-                <Route path="/category/cookies" element={<CategoryPage />} />
-                <Route path="/category/e-liquids" element={<CategoryPage />} />
+                <Route path="/gummies" element={<CategoryPage />} />
+                <Route path="/chocolate-bars" element={<CategoryPage />} />
+                <Route path="/cookies" element={<CategoryPage />} />
+                <Route path="/e-liquids" element={<CategoryPage />} />
                 <Route path="/product/:id" element={<ProductDetailPage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/cart" element={<CartPage />} />
