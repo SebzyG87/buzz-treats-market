@@ -9,28 +9,28 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 210 22% 20%;
+    --foreground: 210 29% 19%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 22% 20%;
+    --card-foreground: 210 29% 19%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 22% 20%;
+    --popover-foreground: 210 29% 19%;
 
-    --primary: 184 62% 85%;
-    --primary-foreground: 210 22% 20%;
+    --primary: 179 61% 80%;
+    --primary-foreground: 210 29% 19%;
 
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 210 22% 20%;
+    --secondary-foreground: 210 29% 19%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 184 62% 85%;
-    --accent-foreground: 210 22% 20%;
+    --accent: 179 61% 80%;
+    --accent-foreground: 210 29% 19%;
 
-    --brand-turquoise: 184 62% 85%;
-    --brand-deep-blue: 210 22% 20%;
+    --brand-turquoise: 179 61% 80%;
+    --brand-deep-blue: 210 29% 19%;
     --brand-white: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -61,28 +61,28 @@ All colors MUST be HSL.
 
   .dark {
     --background: 0 0% 100%;
-    --foreground: 210 22% 20%;
+    --foreground: 210 29% 19%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 22% 20%;
+    --card-foreground: 210 29% 19%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 22% 20%;
+    --popover-foreground: 210 29% 19%;
 
-    --primary: 184 62% 85%;
-    --primary-foreground: 210 22% 20%;
+    --primary: 179 61% 80%;
+    --primary-foreground: 210 29% 19%;
 
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 210 22% 20%;
+    --secondary-foreground: 210 29% 19%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 184 62% 85%;
-    --accent-foreground: 210 22% 20%;
+    --accent: 179 61% 80%;
+    --accent-foreground: 210 29% 19%;
 
-    --brand-turquoise: 184 62% 85%;
-    --brand-deep-blue: 210 22% 20%;
+    --brand-turquoise: 179 61% 80%;
+    --brand-deep-blue: 210 29% 19%;
     --brand-white: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
