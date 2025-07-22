@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ImageCarousel from '@/components/ImageCarousel';
-import { useAuth } from '@/contexts/AuthContext';
 
 const categories = [
   {
@@ -53,24 +52,8 @@ const categories = [
 ];
 
 const Home = () => {
-  const { user, signOut } = useAuth();
-  
   return (
     <div className="bg-background">
-      {/* Temporary logout section for debugging */}
-      {user && (
-        <div className="bg-destructive text-destructive-foreground p-4 text-center">
-          <p className="mb-2">Debug: You are logged in as {user.email}</p>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => signOut()}
-            className="border-destructive-foreground text-destructive-foreground hover:bg-destructive-foreground hover:text-destructive"
-          >
-            Force Logout
-          </Button>
-        </div>
-      )}
       
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary to-accent text-primary-foreground py-20">
