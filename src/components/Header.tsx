@@ -50,9 +50,9 @@ const Header = () => {
                     Admin
                   </Link>
                 )}
-                <Link to="/account" className="hidden md:flex items-center hover:text-accent transition-colors">
+                <Link to="/account" className="flex items-center hover:text-accent transition-colors">
                   <User className="w-5 h-5 mr-1" />
-                  My Account
+                  <span className="hidden md:inline">My Account</span>
                 </Link>
                 <Button 
                   variant="outline" 
@@ -64,15 +64,21 @@ const Header = () => {
                 </Button>
               </>
             ) : (
-              <Link to="/auth">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                >
-                  Sign In
-                </Button>
-              </Link>
+              <>
+                <Link to="/auth" className="flex items-center hover:text-accent transition-colors">
+                  <User className="w-5 h-5 mr-1" />
+                  <span className="hidden md:inline">Sign In</span>
+                </Link>
+                <Link to="/auth" className="hidden md:block">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </>
             )}
             
             <Link to="/cart" className="relative">

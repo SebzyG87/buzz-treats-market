@@ -12,10 +12,13 @@ const AuthPage = () => {
   const [signInPassword, setSignInPassword] = useState('');
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [resetEmail, setResetEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('signin');
+  const [authError, setAuthError] = useState('');
+  const [signUpSuccess, setSignUpSuccess] = useState('');
   
   const { signIn, signUp, signInWithProvider, resetPassword, user } = useAuth();
   const navigate = useNavigate();
@@ -29,8 +32,21 @@ const AuthPage = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError('');
+    
     const { error } = await signIn(signInEmail, signInPassword);
-    if (!error) {
+    if (error) {
+      // Provide specific error messages based on the error
+      if (error.message.includes('Invalid login credentials')) {
+        setAuthError('Incorrect password. Please try again or reset your password.');
+      } else if (error.message.includes('Email not confirmed')) {
+        setAuthError('Your account is not yet active. Please check your email for a confirmation link.');
+      } else if (error.message.includes('User not found')) {
+        setAuthError('No account found with this email address. Please sign up.');
+      } else {
+        setAuthError('Login failed. Please check your credentials and try again.');
+      }
+    } else {
       navigate('/');
     }
     setLoading(false);
@@ -39,9 +55,26 @@ const AuthPage = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError('');
+    setSignUpSuccess('');
+    
+    // Check if passwords match
+    if (signUpPassword !== confirmPassword) {
+      setAuthError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
+    
     const { error } = await signUp(signUpEmail, signUpPassword, fullName);
     if (!error) {
-      setActiveTab('signin');
+      setSignUpSuccess(`Sign-up successful! Please check your email at ${signUpEmail} for a confirmation link to activate your account.`);
+      // Clear form
+      setSignUpEmail('');
+      setSignUpPassword('');
+      setConfirmPassword('');
+      setFullName('');
+    } else {
+      setAuthError(error.message || 'Sign up failed. Please try again.');
     }
     setLoading(false);
   };
@@ -87,6 +120,11 @@ const AuthPage = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignIn} className="space-y-4">
+                {authError && (
+                  <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+                    {authError}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
                   <Input
@@ -113,30 +151,6 @@ const AuthPage = () => {
               </form>
               
               <div className="space-y-3 mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleSocialSignIn('google')}
-                    disabled={loading}
-                  >
-                    Google
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleSocialSignIn('apple')}
-                    disabled={loading}
-                  >
-                    Apple
-                  </Button>
-                </div>
                 <Button 
                   variant="ghost" 
                   className="w-full"
@@ -158,7 +172,17 @@ const AuthPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {signUpSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-800 text-sm p-4 rounded-md mb-4">
+                  {signUpSuccess}
+                </div>
+              )}
               <form onSubmit={handleSignUp} className="space-y-4">
+                {authError && (
+                  <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+                    {authError}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="fullname">Full Name</Label>
                   <Input
@@ -186,6 +210,17 @@ const AuthPage = () => {
                     type="password"
                     value={signUpPassword}
                     onChange={(e) => setSignUpPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     minLength={6}
                   />
