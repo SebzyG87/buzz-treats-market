@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, History, MapPin, Gift } from 'lucide-react';
+import { Edit, History, MapPin, Gift, Key, Mail } from 'lucide-react';
 
 interface UserProfile {
   full_name: string;
@@ -25,7 +25,13 @@ const AccountPage = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [newFullName, setNewFullName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [generatedCoupon, setGeneratedCoupon] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -49,6 +55,7 @@ const AccountPage = () => {
       } else {
         setProfile(data);
         setNewFullName(data.full_name || '');
+        setNewEmail(user.email || '');
       }
       setProfileLoading(false);
     };
@@ -111,6 +118,64 @@ const AccountPage = () => {
     }
   };
 
+  const handleUpdateEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    const { error } = await supabase.auth.updateUser({
+      email: newEmail
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Email update initiated. Please check your new email for confirmation."
+      });
+      setIsEmailDialogOpen(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Password updated successfully"
+      });
+      setIsPasswordDialogOpen(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+  };
+
   const copyCouponCode = () => {
     if (generatedCoupon) {
       navigator.clipboard.writeText(generatedCoupon);
@@ -147,8 +212,14 @@ const AccountPage = () => {
         {/* Profile Information */}
         <Card>
           <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <CardTitle>Profile Information</CardTitle>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                <p className="text-lg">{profile?.full_name || 'Not provided'}</p>
+              </div>
               <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -158,9 +229,9 @@ const AccountPage = () => {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Update Profile</DialogTitle>
+                    <DialogTitle>Update Full Name</DialogTitle>
                     <DialogDescription>
-                      Update your profile information
+                      Update your display name
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -173,20 +244,94 @@ const AccountPage = () => {
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full">Update Profile</Button>
+                    <Button type="submit" className="w-full">Update Name</Button>
                   </form>
                 </DialogContent>
               </Dialog>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-              <p className="text-lg">{profile?.full_name || 'Not provided'}</p>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Email</label>
+                <p className="text-lg">{user.email}</p>
+              </div>
+              <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Change
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Update Email Address</DialogTitle>
+                    <DialogDescription>
+                      Change your email address. You'll need to confirm the new email.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleUpdateEmail} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new_email">New Email Address</Label>
+                      <Input
+                        id="new_email"
+                        type="email"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">Update Email</Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <p className="text-lg">{user.email}</p>
+
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Password</label>
+                <p className="text-lg">••••••••</p>
+              </div>
+              <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Key className="w-4 h-4 mr-2" />
+                    Change
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Password</DialogTitle>
+                    <DialogDescription>
+                      Update your account password
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleUpdatePassword} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new_password">New Password</Label>
+                      <Input
+                        id="new_password"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm_new_password">Confirm New Password</Label>
+                      <Input
+                        id="confirm_new_password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">Change Password</Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>

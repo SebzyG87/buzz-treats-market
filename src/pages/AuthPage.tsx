@@ -19,6 +19,7 @@ const AuthPage = () => {
   const [activeTab, setActiveTab] = useState('signin');
   const [authError, setAuthError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   
   const { signIn, signUp, signInWithProvider, resetPassword, user } = useAuth();
   const navigate = useNavigate();
@@ -144,6 +145,18 @@ const AuthPage = () => {
                     onChange={(e) => setSignInPassword(e.target.value)}
                     required
                   />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember-me"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                  />
+                  <Label htmlFor="remember-me" className="text-sm">
+                    Remember me
+                  </Label>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Signing In...' : 'Sign In'}
