@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Edit, History, MapPin, Gift, Key, Mail } from 'lucide-react';
+import { Edit, History, MapPin, Gift, Key, Mail, Settings } from 'lucide-react';
 
 interface UserProfile {
   full_name: string;
@@ -22,6 +23,7 @@ interface CouponCode {
 
 const AccountPage = () => {
   const { user, loading, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -204,6 +206,21 @@ const AccountPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {isAdmin && (
+        <div className="mb-6">
+          <Link to="/admin">
+            <Button 
+              variant="destructive" 
+              size="lg"
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold"
+            >
+              <Settings className="w-5 h-5 mr-2" />
+              Admin Dashboard
+            </Button>
+          </Link>
+        </div>
+      )}
+      
       <h1 className="text-3xl font-bold mb-8">
         Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}!
       </h1>
