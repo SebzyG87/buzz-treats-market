@@ -90,11 +90,7 @@ const CheckoutPage = () => {
         const applicationId = 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
         const locationId = 'LMQ4F7MJP1WEQ';
 
-        console.log('Using Square config:', { 
-          applicationId: applicationId.substring(0, 20) + '...', 
-          locationId,
-          environment: 'sandbox'
-        });
+        console.log('Using Square sandbox credentials for Buzzing Treats');
 
         if (!applicationId || !locationId) {
           throw new Error('Square credentials are not configured');

@@ -39,7 +39,7 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Process Square payment
+    // Process Square payment - always use sandbox for this setup
     const squareResponse = await fetch('https://connect.squareupsandbox.com/v2/payments', {
       method: 'POST',
       headers: {

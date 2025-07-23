@@ -98,24 +98,38 @@ const AccountPage = () => {
     // Generate a unique coupon code
     const couponCode = `LEAF${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
 
-    // Deduct 500 points
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({ loyalty_points: profile.loyalty_points - 500 })
-      .eq('id', user.id);
+    try {
+      // Start a transaction by updating points and creating coupon
+      const { error: pointsError } = await supabase
+        .from('user_profiles')
+        .update({ loyalty_points: profile.loyalty_points - 500 })
+        .eq('id', user.id);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to redeem points",
-        variant: "destructive"
-      });
-    } else {
+      if (pointsError) throw pointsError;
+
+      // Create the coupon code in the database
+      const { error: couponError } = await supabase
+        .from('coupon_codes')
+        .insert({
+          code: couponCode,
+          discount_percentage: 0.15, // 15% discount
+          user_id: user.id,
+          used: false
+        });
+
+      if (couponError) throw couponError;
+
       setProfile(prev => prev ? { ...prev, loyalty_points: prev.loyalty_points - 500 } : null);
       setGeneratedCoupon(couponCode);
       toast({
         title: "Points Redeemed!",
         description: "Your 15% discount coupon has been generated"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to redeem points",
+        variant: "destructive"
       });
     }
   };

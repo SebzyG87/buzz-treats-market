@@ -9,7 +9,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
 import ScrollToTop from "@/components/ScrollToTop";
 import AdminRoute from "@/components/AdminRoute";
-import Home from "./pages/Home";
+import HomePage from "./pages/HomePage";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import AuthPage from "./pages/AuthPage";
@@ -44,7 +44,7 @@ const App = () => (
             <Layout>
               <ScrollToTop />
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<HomePage />} />
                 <Route path="/gummies" element={<CategoryPage />} />
                 <Route path="/chocolate-bars" element={<CategoryPage />} />
                 <Route path="/cookies" element={<CategoryPage />} />
