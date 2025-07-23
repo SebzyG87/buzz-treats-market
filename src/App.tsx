@@ -25,6 +25,10 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCustomers from "./pages/admin/AdminCustomers";
+import ContactPage from "./pages/ContactPage";
+import ShippingPage from "./pages/ShippingPage";
+import ReturnsPage from "./pages/ReturnsPage";
+import FAQPage from "./pages/FAQPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +59,14 @@ const App = () => (
                 <Route path="/order-history" element={<OrderHistoryPage />} />
                 <Route path="/order/:orderId" element={<OrderDetailPage />} />
                 <Route path="/manage-addresses" element={<AddressManagementPage />} />
+                
+                {/* Info Pages */}
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/shipping" element={<ShippingPage />} />
+                <Route path="/returns" element={<ReturnsPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                
+                {/* Admin Routes */}
                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                 <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
                 <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />

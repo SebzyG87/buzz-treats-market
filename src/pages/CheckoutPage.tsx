@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,12 +33,19 @@ const CheckoutPage = () => {
     postcode: '',
     country: 'United Kingdom'
   });
+  const [isGuestCheckout, setIsGuestCheckout] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
 
   const subtotal = items.reduce((sum, item) => sum + (item.product.price_value * item.quantity), 0);
   const discountAmount = Math.round(subtotal * appliedDiscount);
-  const total = subtotal - discountAmount;
+  const shippingCost = subtotal >= 50 ? 0 : 4.99;
+  const total = subtotal - discountAmount + shippingCost;
+
+  // Country list for international shipping
+  const countries = [
+    'United Kingdom', 'United States', 'Canada', 'Australia', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 'Switzerland', 'Austria', 'Ireland', 'Denmark', 'Sweden', 'Norway', 'Finland', 'Portugal', 'Greece', 'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Bulgaria', 'Croatia', 'Slovenia', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania', 'Malta', 'Cyprus', 'Luxembourg', 'Iceland', 'Liechtenstein', 'Monaco', 'San Marino', 'Vatican City', 'Andorra', 'Japan', 'South Korea', 'Singapore', 'Hong Kong', 'New Zealand', 'Brazil', 'Argentina', 'Chile', 'Mexico', 'South Africa', 'India', 'Thailand', 'Malaysia', 'Indonesia', 'Philippines', 'Vietnam', 'Taiwan', 'Israel', 'Turkey', 'Russia', 'Ukraine', 'Belarus', 'Serbia', 'Montenegro', 'Bosnia and Herzegovina', 'North Macedonia', 'Albania', 'Moldova', 'Georgia', 'Armenia', 'Azerbaijan', 'Kazakhstan', 'Uzbekistan', 'Turkmenistan', 'Kyrgyzstan', 'Tajikistan', 'Mongolia', 'China', 'Nepal', 'Bhutan', 'Bangladesh', 'Sri Lanka', 'Maldives', 'Pakistan', 'Afghanistan', 'Iran', 'Iraq', 'Kuwait', 'Saudi Arabia', 'United Arab Emirates', 'Qatar', 'Bahrain', 'Oman', 'Yemen', 'Jordan', 'Lebanon', 'Syria', 'Egypt', 'Libya', 'Tunisia', 'Algeria', 'Morocco', 'Sudan', 'Ethiopia', 'Kenya', 'Tanzania', 'Uganda', 'Rwanda', 'Burundi', 'Democratic Republic of the Congo', 'Republic of the Congo', 'Central African Republic', 'Chad', 'Niger', 'Nigeria', 'Cameroon', 'Equatorial Guinea', 'Gabon', 'São Tomé and Príncipe', 'Cape Verde', 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Ghana', 'Togo', 'Benin', 'Burkina Faso', 'Mali', 'Senegal', 'Mauritania', 'Gambia', 'Zambia', 'Zimbabwe', 'Botswana', 'Namibia', 'Angola', 'Mozambique', 'Madagascar', 'Mauritius', 'Seychelles', 'Comoros', 'Djibouti', 'Eritrea', 'Somalia', 'Malawi', 'Swaziland', 'Lesotho'
+  ];
 
   useEffect(() => {
     const initializeSquare = async () => {
@@ -58,7 +66,8 @@ const CheckoutPage = () => {
 
     const initSquarePayments = async () => {
       try {
-        const paymentsInstance = window.Square.payments('sandbox-sq0idb-APPLICATION_ID', 'LOCATION_ID');
+        // Use production application ID instead of sandbox
+        const paymentsInstance = window.Square.payments('sq0idp-tJWqTdSE9rrKxg8m2G0Pjw', 'LQMJEPXV1BA5A');
         setPayments(paymentsInstance);
         
         const cardInstance = await paymentsInstance.card();
@@ -66,6 +75,11 @@ const CheckoutPage = () => {
         setCard(cardInstance);
       } catch (error) {
         console.error('Failed to initialize Square payments:', error);
+        toast({
+          title: "Payment System Error",
+          description: "Unable to load payment form. Please refresh and try again.",
+          variant: "destructive"
+        });
       }
     };
 
@@ -74,6 +88,34 @@ const CheckoutPage = () => {
 
   if (items.length === 0) {
     return <Navigate to="/cart" replace />;
+  }
+
+  // If not logged in and not in guest checkout mode, redirect to auth
+  if (!user && !isGuestCheckout) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Checkout Options</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>Choose how you'd like to proceed:</p>
+            <div className="space-y-2">
+              <Link to="/auth" className="block">
+                <Button className="w-full">Sign In to Your Account</Button>
+              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setIsGuestCheckout(true)}
+              >
+                Continue as Guest
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const handleApplyPromoCode = async () => {
@@ -115,6 +157,13 @@ const CheckoutPage = () => {
     });
   };
 
+  const handleCountryChange = (value: string) => {
+    setShippingInfo({
+      ...shippingInfo,
+      country: value
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!card) {
@@ -142,7 +191,7 @@ const CheckoutPage = () => {
             })),
             shippingAddress: shippingInfo,
             user_id: user?.id || null,
-            guest_email: user ? null : shippingInfo.email,
+            guest_email: !user ? shippingInfo.email : null,
             discount_percentage: appliedDiscount,
             promo_code: promoCode || null
           }
@@ -255,13 +304,18 @@ const CheckoutPage = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  name="country"
-                  value={shippingInfo.country}
-                  onChange={handleInputChange}
-                  disabled
-                />
+                <Select value={shippingInfo.country} onValueChange={handleCountryChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -315,6 +369,10 @@ const CheckoutPage = () => {
                   <span>Subtotal</span>
                   <span>£{subtotal.toFixed(2)}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>Shipping</span>
+                  <span>{shippingCost === 0 ? 'Free' : `£${shippingCost.toFixed(2)}`}</span>
+                </div>
                 {appliedDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount ({Math.round(appliedDiscount * 100)}%)</span>
@@ -325,6 +383,11 @@ const CheckoutPage = () => {
                   <span>Total</span>
                   <span>£{total.toFixed(2)}</span>
                 </div>
+                {subtotal < 50 && (
+                  <p className="text-sm text-muted-foreground">
+                    Add £{(50 - subtotal).toFixed(2)} more for free shipping!
+                  </p>
+                )}
               </div>
               
               <Button 
