@@ -24,6 +24,8 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [payments, setPayments] = useState<any>(null);
   const [card, setCard] = useState<any>(null);
+  const [paymentFormLoading, setPaymentFormLoading] = useState(true);
+  const [paymentFormError, setPaymentFormError] = useState<string | null>(null);
   
   const [shippingInfo, setShippingInfo] = useState({
     fullName: '',
@@ -49,42 +51,137 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     const initializeSquare = async () => {
-      if (!window.Square) {
-        const script = document.createElement('script');
-        script.src = 'https://web.squarecdn.com/v1/square.js';
-        script.async = true;
-        script.onload = () => {
-          if (window.Square) {
-            initSquarePayments();
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        initSquarePayments();
+      setPaymentFormLoading(true);
+      setPaymentFormError(null);
+      
+      try {
+        if (!window.Square) {
+          const script = document.createElement('script');
+          script.src = 'https://web.squarecdn.com/v1/square.js';
+          script.async = true;
+          
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+            setTimeout(() => reject(new Error('Square script load timeout')), 10000);
+            document.head.appendChild(script);
+          });
+        }
+
+        await initSquarePayments();
+      } catch (error) {
+        console.error('Failed to load Square script:', error);
+        setPaymentFormError('Unable to load payment system. Please refresh the page and try again.');
+        setPaymentFormLoading(false);
       }
     };
 
     const initSquarePayments = async () => {
       try {
-        // Use production application ID instead of sandbox
-        const paymentsInstance = window.Square.payments('sq0idp-tJWqTdSE9rrKxg8m2G0Pjw', 'LQMJEPXV1BA5A');
+        // Use sandbox for development, production for live
+        const isProduction = !window.location.hostname.includes('localhost') && 
+                           !window.location.hostname.includes('127.0.0.1') &&
+                           !window.location.hostname.includes('.dev');
+        
+        const applicationId = isProduction ? 'sq0idp-tJWqTdSE9rrKxg8m2G0Pjw' : 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
+        const locationId = isProduction ? 'LQMJEPXV1BA5A' : 'LMQ4F7MJP1WEQ';
+        
+        console.log('Initializing Square with environment:', { isProduction, applicationId, locationId });
+        
+        const paymentsInstance = window.Square.payments(applicationId, locationId);
         setPayments(paymentsInstance);
         
-        const cardInstance = await paymentsInstance.card();
+        const cardInstance = await paymentsInstance.card({
+          style: {
+            input: {
+              fontSize: '14px',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              color: 'hsl(var(--foreground))',
+              backgroundColor: 'hsl(var(--background))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '6px',
+              padding: '12px'
+            },
+            '.input-container': {
+              borderRadius: '6px'
+            },
+            '.input-container.is-focus': {
+              borderColor: 'hsl(var(--ring))'
+            },
+            '.input-container.is-error': {
+              borderColor: 'hsl(var(--destructive))'
+            },
+            '.message-text': {
+              color: 'hsl(var(--destructive))'
+            }
+          }
+        });
+        
         await cardInstance.attach('#card-container');
         setCard(cardInstance);
+        setPaymentFormLoading(false);
+        
+        console.log('Square payment form initialized successfully');
       } catch (error) {
         console.error('Failed to initialize Square payments:', error);
-        toast({
-          title: "Payment System Error",
-          description: "Unable to load payment form. Please refresh and try again.",
-          variant: "destructive"
-        });
+        setPaymentFormError('Unable to load payment form. Please refresh the page and try again.');
+        setPaymentFormLoading(false);
       }
     };
 
     initializeSquare();
   }, []);
+
+  const retryPaymentForm = () => {
+    const cardContainer = document.getElementById('card-container');
+    if (cardContainer) {
+      cardContainer.innerHTML = '';
+    }
+    setCard(null);
+    setPayments(null);
+    
+    // Re-initialize Square
+    const initSquarePayments = async () => {
+      setPaymentFormLoading(true);
+      setPaymentFormError(null);
+      
+      try {
+        const isProduction = !window.location.hostname.includes('localhost') && 
+                           !window.location.hostname.includes('127.0.0.1') &&
+                           !window.location.hostname.includes('.dev');
+        
+        const applicationId = isProduction ? 'sq0idp-tJWqTdSE9rrKxg8m2G0Pjw' : 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
+        const locationId = isProduction ? 'LQMJEPXV1BA5A' : 'LMQ4F7MJP1WEQ';
+        
+        const paymentsInstance = window.Square.payments(applicationId, locationId);
+        setPayments(paymentsInstance);
+        
+        const cardInstance = await paymentsInstance.card({
+          style: {
+            input: {
+              fontSize: '14px',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              color: 'hsl(var(--foreground))',
+              backgroundColor: 'hsl(var(--background))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '6px',
+              padding: '12px'
+            }
+          }
+        });
+        
+        await cardInstance.attach('#card-container');
+        setCard(cardInstance);
+        setPaymentFormLoading(false);
+      } catch (error) {
+        console.error('Failed to initialize Square payments:', error);
+        setPaymentFormError('Unable to load payment form. Please refresh the page and try again.');
+        setPaymentFormLoading(false);
+      }
+    };
+
+    initSquarePayments();
+  };
 
   if (items.length === 0) {
     return <Navigate to="/cart" replace />;
@@ -291,7 +388,9 @@ const CheckoutPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="postcode">Postcode</Label>
+                  <Label htmlFor="postcode">
+                    {shippingInfo.country === 'United States' ? 'ZIP Code' : 'Postcode'}
+                  </Label>
                   <Input
                     id="postcode"
                     name="postcode"
@@ -326,7 +425,23 @@ const CheckoutPage = () => {
               <CardTitle>Payment Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <div id="card-container" className="min-h-[100px] p-4 border rounded-md"></div>
+              {paymentFormLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                  <div className="text-sm text-muted-foreground">Loading payment form...</div>
+                </div>
+              ) : paymentFormError ? (
+                <div className="space-y-4 py-4">
+                  <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                    {paymentFormError}
+                  </div>
+                  <Button onClick={retryPaymentForm} variant="outline" size="sm">
+                    Retry Payment Form
+                  </Button>
+                </div>
+              ) : (
+                <div id="card-container" className="min-h-[100px]"></div>
+              )}
             </CardContent>
           </Card>
         </div>
