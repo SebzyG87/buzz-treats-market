@@ -78,10 +78,15 @@ const CheckoutPage = () => {
 
     const initSquarePayments = async () => {
       try {
-        // Use sandbox for development, production for live
-        const isProduction = !window.location.hostname.includes('localhost') && 
-                           !window.location.hostname.includes('127.0.0.1') &&
-                           !window.location.hostname.includes('.dev');
+        // Use sandbox for all development and preview environments
+        const isProduction = window.location.hostname.includes('yourdomain.com'); // Only your actual production domain
+        const isLovablePreview = window.location.hostname.includes('.lovableproject.com');
+        
+        console.log('Environment detection:', { 
+          hostname: window.location.hostname, 
+          isProduction, 
+          isLovablePreview 
+        });
         
         const applicationId = isProduction ? 'sq0idp-tJWqTdSE9rrKxg8m2G0Pjw' : 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
         const locationId = isProduction ? 'LQMJEPXV1BA5A' : 'LMQ4F7MJP1WEQ';
