@@ -87,10 +87,27 @@ const CheckoutPage = () => {
           });
         }
 
-        const applicationId = 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
-        const locationId = 'LMQ4F7MJP1WEQ';
+        const hostname = window.location.hostname;
+        // CORRECTED: Use sandbox for Lovable previews and localhost, production for actual production domain
+        const isProduction = hostname !== 'localhost' && 
+                           !hostname.includes('127.0.0.1') &&
+                           !hostname.includes('.lovableproject.com') &&
+                           !hostname.includes('.dev');
 
-        console.log('Using Square sandbox credentials for Buzzing Treats');
+        console.log('Environment detection:', { 
+          hostname, 
+          isProduction 
+        });
+
+        // Square credentials
+        const applicationId = isProduction ? 'sq0idp-tJWqTdSE9rrKxg8m2G0Pjw' : 'sandbox-sq0idb-5k0bXwu0zQTpJNdCJL8O_Q';
+        const locationId = isProduction ? 'LQMJEPXV1BA5A' : 'LMQ4F7MJP1WEQ';
+
+        console.log('Using Square config:', { 
+          applicationId: applicationId.substring(0, 20) + '...', 
+          locationId,
+          environment: isProduction ? 'production' : 'sandbox'
+        });
 
         if (!applicationId || !locationId) {
           throw new Error('Square credentials are not configured');

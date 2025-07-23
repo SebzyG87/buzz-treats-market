@@ -23,14 +23,31 @@ const Header = () => {
             🐝 Buzzing Treats
           </Link>
 
-          {/* No desktop navigation - using hamburger menu for all screen sizes */}
+          {/* Desktop Navigation - Hidden on mobile */}
+          <nav className="hidden lg:flex space-x-6">
+            <Link to="/" className="hover:text-accent transition-colors">
+              Home
+            </Link>
+            <Link to="/gummies" className="hover:text-accent transition-colors">
+              Gummies
+            </Link>
+            <Link to="/chocolate-bars" className="hover:text-accent transition-colors">
+              Chocolate Bars
+            </Link>
+            <Link to="/cookies" className="hover:text-accent transition-colors">
+              Cookies
+            </Link>
+            <Link to="/e-liquids" className="hover:text-accent transition-colors">
+              E-Liquids
+            </Link>
+          </nav>
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            {/* Hamburger Menu for All Screen Sizes */}
+            {/* Hamburger Menu for Mobile/Tablet */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="lg:hidden">
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
@@ -47,25 +64,32 @@ const Header = () => {
                     Home
                   </Link>
                   <Link 
-                    to="/" 
+                    to="/gummies" 
                     className="text-lg hover:text-accent transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    All Sweets
+                    Gummies
                   </Link>
                   <Link 
-                    to="/" 
+                    to="/chocolate-bars" 
                     className="text-lg hover:text-accent transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Sweet Tubs
+                    Chocolate Bars
                   </Link>
                   <Link 
-                    to="/" 
+                    to="/cookies" 
                     className="text-lg hover:text-accent transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    New Sweets
+                    Cookies
+                  </Link>
+                  <Link 
+                    to="/e-liquids" 
+                    className="text-lg hover:text-accent transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    E-Liquids
                   </Link>
                   
                   <div className="border-t pt-4 mt-4">
@@ -112,7 +136,41 @@ const Header = () => {
               </SheetContent>
             </Sheet>
 
-            {/* No desktop user actions - all in hamburger menu */}
+            {/* Desktop User Actions */}
+            <div className="hidden lg:flex items-center space-x-4">
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link to="/admin" className="flex items-center hover:text-accent transition-colors">
+                      <Heart className="w-5 h-5 mr-1" />
+                      Admin
+                    </Link>
+                  )}
+                  <Link to="/account" className="flex items-center hover:text-accent transition-colors">
+                    <User className="w-5 h-5 mr-1" />
+                    My Account
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={signOut}
+                    className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Link to="/auth">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
             
             {/* Shopping Cart */}
             <Link to="/cart" className="relative">
