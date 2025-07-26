@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCart } from '@/contexts/CartContext';
-import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   id: string;
@@ -22,35 +20,6 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addItem } = useCart();
-  const { toast } = useToast();
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (product.stock_quantity <= 0) {
-      toast({
-        title: "Out of Stock",
-        description: "This item is currently out of stock",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    addItem({
-      id: product.id,
-      name: product.name,
-      price_value: product.price_value,
-      image_url: product.image_url
-    });
-
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart`
-    });
-  };
-
   console.log('Product image URL:', product.image_url);
 
   return (
@@ -112,10 +81,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <CardFooter className="p-4 pt-0">
           <Button 
             className="w-full" 
-            onClick={handleAddToCart}
             disabled={product.stock_quantity <= 0}
           >
-            {product.stock_quantity <= 0 ? 'Out of Stock' : 'Add to Cart'}
+            {product.stock_quantity <= 0 ? 'Out of Stock' : 'View Product'}
           </Button>
         </CardFooter>
       </Card>

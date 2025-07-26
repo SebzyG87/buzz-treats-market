@@ -1,10 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 
 const Footer = () => {
-  const { user } = useAuth();
-  
   return (
     <footer className="bg-primary text-primary-foreground mt-auto">
       <div className="container mx-auto px-4 py-8">
@@ -21,6 +18,7 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-2 text-sm">
+              <li><Link to="/shop" className="hover:text-accent transition-colors">Shop All</Link></li>
               <li><Link to="/gummies" className="hover:text-accent transition-colors">Gummies</Link></li>
               <li><Link to="/chocolate-bars" className="hover:text-accent transition-colors">Chocolate Bars</Link></li>
               <li><Link to="/cookies" className="hover:text-accent transition-colors">Cookies</Link></li>
@@ -43,12 +41,17 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Account</h4>
             <ul className="space-y-2 text-sm">
-              {!user && (
-                <li><Link to="/auth" className="hover:text-accent transition-colors">Sign In</Link></li>
-              )}
-              <li><Link to="/account" className="hover:text-accent transition-colors">My Account</Link></li>
-              <li><Link to="/cart" className="hover:text-accent transition-colors">Shopping Cart</Link></li>
-              <li><Link to="/orders" className="hover:text-accent transition-colors">Order History</Link></li>
+              <li>
+                <a 
+                  href="https://my.ecwid.com/api/v3/121542775/customers/login" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors"
+                >
+                  My Account
+                </a>
+              </li>
+              <li><Link to="/order-history" className="hover:text-accent transition-colors">Order History</Link></li>
             </ul>
           </div>
         </div>

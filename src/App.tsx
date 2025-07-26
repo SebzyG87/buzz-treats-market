@@ -2,29 +2,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { CartProvider } from "@/contexts/CartContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/components/Layout";
 import ScrollToTop from "@/components/ScrollToTop";
-import AdminRoute from "@/components/AdminRoute";
 import Home from "./pages/Home";
+import ShopPage from "./pages/ShopPage";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import AuthPage from "./pages/AuthPage";
-import CartPage from "./pages/CartPage";
-import CheckoutPage from "./pages/CheckoutPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
-import AccountPage from "./pages/AccountPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
-import AddressManagementPage from "./pages/AddressManagementPage";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AdminOrders from "./pages/admin/AdminOrders";
-import AdminCustomers from "./pages/admin/AdminCustomers";
 import ContactPage from "./pages/ContactPage";
 import ShippingPage from "./pages/ShippingPage";
 import ReturnsPage from "./pages/ReturnsPage";
@@ -35,49 +22,35 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/gummies" element={<CategoryPage />} />
-                <Route path="/chocolate-bars" element={<CategoryPage />} />
-                <Route path="/cookies" element={<CategoryPage />} />
-                <Route path="/e-liquids" element={<CategoryPage />} />
-                <Route path="/product/:id" element={<ProductDetailPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/payment-success" element={<PaymentSuccessPage />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/order-history" element={<OrderHistoryPage />} />
-                <Route path="/order/:orderId" element={<OrderDetailPage />} />
-                <Route path="/manage-addresses" element={<AddressManagementPage />} />
-                
-                {/* Info Pages */}
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/shipping" element={<ShippingPage />} />
-                <Route path="/returns" element={<ReturnsPage />} />
-                <Route path="/faq" element={<FAQPage />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-                <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
-                <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
-                <Route path="/admin/customers" element={<AdminRoute><AdminCustomers /></AdminRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
-    </AuthProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/gummies" element={<CategoryPage />} />
+            <Route path="/chocolate-bars" element={<CategoryPage />} />
+            <Route path="/cookies" element={<CategoryPage />} />
+            <Route path="/e-liquids" element={<CategoryPage />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/order-history" element={<OrderHistoryPage />} />
+            <Route path="/order/:orderId" element={<OrderDetailPage />} />
+            
+            {/* Info Pages */}
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/shipping" element={<ShippingPage />} />
+            <Route path="/returns" element={<ReturnsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
