@@ -21,5 +21,25 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Ecwid Scripts -->
+    <script data-cfasync="false" type="text/javascript" src="https://app.ecwid.com/script.js?121542775&data_platform=code&data_date=2025-07-25" charset="utf-8"></script>
+    <script type="text/javascript">
+      // Initialize Ecwid widgets after page loads
+      window.addEventListener('load', function() {
+        if (typeof Ecwid !== 'undefined') {
+          Ecwid.init();
+        }
+        if (typeof xSearch !== 'undefined') {
+          xSearch("id=my-search-121542775");
+        }
+        if (typeof xCategoriesV2 !== 'undefined') {
+          xCategoriesV2("id=my-categories-121542775");
+        }
+        if (typeof xProductBrowser !== 'undefined') {
+          xProductBrowser("id=my-store-121542775");
+        }
+      });
+    </script>
   </body>
 </html>

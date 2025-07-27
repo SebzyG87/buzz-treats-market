@@ -29,15 +29,6 @@ const Header = () => {
           {/* Search Box - Desktop */}
           <div className="hidden md:block">
             <div id="my-search-121542775"></div>
-            <script 
-              data-cfasync="false" 
-              type="text/javascript" 
-              src="https://app.ecwid.com/script.js?121542775&data_platform=code&data_date=2025-07-25" 
-              charSet="utf-8"
-            ></script>
-            <script type="text/javascript">
-              {`xSearch("id=my-search-121542775");`}
-            </script>
           </div>
 
           {/* Right Side Actions */}
@@ -98,15 +89,6 @@ const Header = () => {
 
             {/* Shopping Bag */}
             <div className="ec-cart-widget"></div>
-            <script 
-              data-cfasync="false" 
-              type="text/javascript" 
-              src="https://app.ecwid.com/script.js?121542775&data_platform=code&data_date=2025-07-25" 
-              charSet="utf-8"
-            ></script>
-            <script type="text/javascript">
-              {`Ecwid.init();`}
-            </script>
           </div>
         </div>
       </div>
